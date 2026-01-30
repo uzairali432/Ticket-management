@@ -13,13 +13,11 @@ app.use("/api", router);
 
 async function connectdb() {
   mongoose.set("autoIndex", true);
-  await mongoose.connect(
-    "mongodb+srv://dbuser:dbuser@cluster0.iajznvj.mongodb.net/?appName=Cluster0",
-  );
+  await mongoose.connect(process.env.MONGODB_URL);
 }
 
-app.listen(5000, () => {
-  console.log("App Running on 5000");
+app.listen(process.env.PORT || 5000, () => {
+  console.log("App Running on port", process.env.PORT || 5000);
   connectdb().then(() => {
     console.log("Database connected");
   });
