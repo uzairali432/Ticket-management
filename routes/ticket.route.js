@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { TicketController } = require("../controllers/ticket.controller");
 const { authenticate, authorizeAdmin } = require("../middlewares/authorization.middleware");
 const { bodyValidator } = require("../middlewares/validation.middleware");
-const { createTicketSchema, updateTicketSchema } = require("../validation/ticket.validation");
+const { createTicketSchema, updateTicketSchema, assignTicketSchema } = require("../validation/ticket.validation");
 
 const router = Router();
 
@@ -22,6 +22,14 @@ router.put(
   authorizeAdmin,
   bodyValidator(updateTicketSchema),
   TicketController.updateTicket
+);
+
+router.put(
+  "/:id/assign",
+  authenticate,
+  authorizeAdmin,
+  bodyValidator(assignTicketSchema),
+  TicketController.assignTicket
 );
 
 module.exports = router;

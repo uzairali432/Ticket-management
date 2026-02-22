@@ -71,6 +71,33 @@ class TicketController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  static async assignTicket(req, res) {
+    try {
+      const { id } = req.params;
+      const { assignedTo } = req.body;
+
+      const ticket = await Ticket.findById(id);
+      if (!ticket) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+
+      ticket.assignedTo = assignedTo;
+      const updatedTicket = await ticket.save();
+      const populatedTicket = await updatedTicket.populate(
+        "createdBy assignedTo",
+        "username email"
+      );
+
+      return res.status(200).json({
+        message: "Ticket assigned successfully",
+        ticket: populatedTicket,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 
 module.exports = { TicketController };
