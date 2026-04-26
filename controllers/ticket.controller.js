@@ -1,6 +1,45 @@
 const Ticket = require("../models/ticket.model");
 
 class TicketController {
+  static async listMyTickets(req, res) {
+    try {
+      const tickets = await Ticket.find({ assignedTo: req.user.id })
+        .populate("createdBy", "username email")
+        .populate("assignedTo", "username email");
+      return res.json({ tickets });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async updateTicketStatus(req, res) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const ticket = await Ticket.findOne({ _id: id, assignedTo: req.user.id });
+      if (!ticket) {
+        return res.status(404).json({ message: "Ticket not found or you are not assigned to this ticket" });
+      }
+
+      ticket.status = status;
+      const updatedTicket = await ticket.save();
+      const populatedTicket = await updatedTicket.populate(
+        "createdBy assignedTo",
+        "username email"
+      );
+
+      return res.status(200).json({
+        message: "Ticket status updated successfully",
+        ticket: populatedTicket,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   static async listTickets(req, res) {
     try {
       const tickets = await Ticket.find()
