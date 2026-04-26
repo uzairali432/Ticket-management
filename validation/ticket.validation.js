@@ -17,4 +17,8 @@ const assignTicketSchema = Joi.object({
   assignedTo: Joi.string().required().regex(/^[0-9a-fA-F]{24}$/),
 }).required();
 
-module.exports = { createTicketSchema, updateTicketSchema, assignTicketSchema };
+const updateTicketStatusSchema = Joi.object({
+  status: Joi.string().valid("open", "in_progress", "closed").required(),
+}).required();
+
+module.exports = { createTicketSchema, updateTicketSchema, assignTicketSchema, updateTicketStatusSchema };
